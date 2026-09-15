@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="only light">
+<title>SplashSplat: Reconstructing Splashing Liquids from Real-World Multi-View Videos</title>
+<meta name="description" content="A seven-camera 4K benchmark of real splashing liquids, and a method that reconstructs them for novel views, temporal interpolation and style transfer.">
+<link rel="canonical" href="https://niko-creater.github.io/splashsplat-web/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://niko-creater.github.io/splashsplat-web/">
+<meta property="og:title" content="SplashSplat: Reconstructing Splashing Liquids from Real-World Multi-View Videos">
+<meta property="og:description" content="A real multi-view video benchmark of splashing liquids and a method that imposes physical structure only where the observations can constrain it.">
+<meta property="og:image" content="https://niko-creater.github.io/splashsplat-web/static/images/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="SplashSplat teaser: a seven-camera capture of water poured into a bowl, and the novel views, interpolated frames, style transfers and velocity field reconstructed from it.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%A7%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+<link rel="icon" href="static/images/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="static/images/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+
+<!-- ======================================================================
+     HERO. Placeholders are marked TODO:
+     the Paper link, the URLs in <head>, the BibTeX and the footer
+     acknowledgement. Nothing else on the page depends on them.
+     ====================================================================== -->
+<header class="hero">
+  <div class="wrap">
+    <h1><span class="name">SplashSplat</span>: Reconstructing Splashing Liquids from Real-World Multi-View Videos</h1>
+
+    <p class="authors">
+      <span>Peiyu Liu<sup>1*</sup></span>,
+      <span><a href="https://kristen-z.github.io/" target="_blank" rel="noopener">Dingxi Zhang</a><sup>2*</sup></span>,
+      <span><a href="https://federicotombari.github.io/" target="_blank" rel="noopener">Federico Tombari</a><sup>3</sup></span>,
+      <span><a href="https://people.inf.ethz.ch/marc.pollefeys/" target="_blank" rel="noopener">Marc Pollefeys</a><sup>2,4</sup></span>,
+      <span><a href="https://scholar.google.com/citations?user=7D10QQkAAAAJ&amp;hl=en" target="_blank" rel="noopener">Christina Tsalicoglou</a><sup>3</sup></span>,
+      <span><a href="https://danini.github.io/" target="_blank" rel="noopener">Daniel Barath</a><sup>2,3</sup></span>
+    </p>
+    <p class="affils"><sup>1</sup>EPFL &nbsp;&nbsp; <sup>2</sup>ETH Zurich &nbsp;&nbsp; <sup>3</sup>Google &nbsp;&nbsp; <sup>4</sup>Microsoft</p>
+    <p class="equal"><sup>*</sup>Equal contribution</p>
+
+    <nav class="btns" aria-label="Links">
+      <!-- TODO(links): turn the "coming soon" span into <a class="btn" href="..."> when public -->
+      <span class="btn btn--soon" title="Available after review"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6zM14 3.5V8h4.5z"/></svg>Paper (coming soon)</span>
+      <a class="btn" href="https://github.com/Niko-creater/Splashsplat" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 8.4 22.9c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>GitHub</a>
+      <a class="btn" href="https://drive.google.com/file/d/1qSMX0ydia12yk0X-6shNNKqXNobU6vgR/view?usp=sharing" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 16.4l-4.7-4.7 1.4-1.4 3.3 3.3V3zM4 19h16v2H4z"/></svg>Dataset</a>
+    </nav>
+
+    <figure class="teaser">
+      <div class="frame"><img src="static/images/teaser.jpg" width="2128" height="924" alt="Left: the SplashSplat benchmark, seven calibrated cameras, fluid and container masks, scanned container meshes and a grid of scenes. Right: novel views, temporal interpolation, style transfer and a recovered velocity field produced by SplashSplat."></div>
+      <figcaption id="cap-teaser"><b>Left:</b> our benchmark captures pouring and splashing across diverse containers, liquids and backgrounds with seven calibrated cameras, with fluid and container masks and scanned container meshes. <b>Right:</b> from these observations SplashSplat synthesizes novel views, recovers a velocity field, and supports temporal interpolation and style transfer.</figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+
+<!-- ======================================================================
+     ABSTRACT (no visible heading): one looping bullet-time teaser (the three picks
+     bowl_009 cam4, bowl_006 cam2, bowl_004 cam2, in that order, cross-faded into a single
+     clip by tools/build_assets.py --only bullet) with the abstract paragraph as its caption.
+     ====================================================================== -->
+<section id="abstract" aria-labelledby="h-abstract">
+  <div class="wrap">
+    <h2 id="h-abstract" class="visually-hidden">Abstract</h2>
+    <figure class="lead-figure">
+      <div class="frame frame--teaser"><video data-src="static/videos/teaser_bullet.mp4" poster="static/images/posters/teaser_bullet.jpg" data-start="0.093" width="936" height="1040" muted loop playsinline preload="none" aria-label="Bullet-time renders of three splashes, played back to back in a loop"></video></div>
+      <figcaption id="cap-abstract" class="lead-text">SplashSplat is a benchmark of 20 real splashing-liquid scenes captured by seven synchronized, calibrated 4K cameras with manually refined liquid masks, and a reconstruction method built on a single principle: impose physical structure only where the observations can constrain it. Per-frame liquid SDFs fused from the masks provide the geometry, level-set transport between consecutive SDFs yields a coarse velocity field, and Lagrangian carriers advected along this flow, corrected against each new observation and reseeded where coverage is lost, decode local Gaussians for differentiable rendering. SplashSplat outperforms state-of-the-art dynamic Gaussian splatting methods on our real captures and on a synthetic benchmark, with physically more plausible motion and a lower training cost, and the same representation supports temporal interpolation and style transfer without re-optimization.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ====================================================================== -->
+<section id="benchmark">
+  <div class="wrap">
+    <h2>The SplashSplat benchmark</h2>
+    <p class="lead">Twenty real scenes of liquid being poured into bowls and tanks, recorded by a seven-camera 4K rig with manually refined per-view liquid masks. The video sweeps from the captured frames to their masks.</p>
+
+    <figure>
+      <div class="frame"><video data-src="static/videos/scene_grid.mp4" poster="static/images/posters/scene_grid.jpg" width="1920" height="872" muted loop playsinline preload="none" aria-label="Grid of the twenty benchmark scenes wiping from captured video to liquid masks"></video></div>
+    </figure>
+  </div>
+</section>
+
+<!-- ====================================================================== -->
+<section id="overview">
+  <div class="wrap">
+    <h2>Method overview</h2>
+    <figure>
+      <div class="frame frame--flat"><img src="static/images/pipeline.png" width="2400" height="834" alt="Pipeline: multi-view masks of frames t and t+1 are fused into a liquid SDF and an Eulerian velocity field; an observation-guided loop forecasts Lagrangian carriers along the flow, corrects them against the SDF and resamples the seeding band; a Gaussian decoder turns each carrier into child Gaussians that are rendered and trained with a visual loss."></div>
+      <figcaption id="cap-pipeline">At each frame, per-view liquid masks are fused into an observed liquid SDF, and consecutive SDFs yield a coarse Eulerian velocity field. Lagrangian carriers move through a forecast–correct–resample loop: they are propagated by the flow, corrected against the next-frame SDF so that drift outside the liquid is suppressed, and resampled where surface coverage is lost. Each carrier decodes local Gaussians, which are rasterized together with a frozen background and optimized under photometric and mask supervision.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ======================================================================
+     RESULT GALLERIES. Method names are HTML column headers (`.cols`) aligned to
+     the panels of each clip; --n = panels, --gap = gutter width as a percentage
+     of the clip width (compare 10/1920, interp 9/2886, style 8/2632). One clip is
+     visible at a time; the thumbnails below it are the switcher.
+     ====================================================================== -->
+<section id="results">
+  <div class="wrap">
+    <h2>Novel-view synthesis on real captures</h2>
+
+    <div class="tabs" role="tablist" aria-label="Evaluation split" data-tabs>
+      <button class="tab" role="tab" id="tab-cmp-test" aria-controls="cmp-test" aria-selected="true">Held-out views</button>
+      <button class="tab" role="tab" id="tab-cmp-train" aria-controls="cmp-train" aria-selected="false" tabindex="-1">Training views</button>
+    </div>
+
+    <div class="panel" id="cmp-test" role="tabpanel" aria-labelledby="tab-cmp-test" tabindex="0">
+      <div class="gallery" style="--n:5; --gap:0.5208%">
+        <div class="strip">
+          <div class="cols" id="cols-cmp-test"><span>Captured</span><span>Deformable-3DGS</span><span>SpacetimeGaussians</span><span>4D-Scaffold-GS</span><span class="ours">Ours</span></div>
+          <div class="panel" id="p-cmp-test-1" role="tabpanel" aria-labelledby="t-cmp-test-1"><div class="frame"><video data-src="static/videos/compare_test_bowl_013_cam7.mp4" poster="static/images/posters/compare_test_bowl_013_cam7.jpg" data-start="0.4" width="1920" height="610" muted loop playsinline preload="none" aria-label="Held-out view, example 1" aria-describedby="cols-cmp-test"></video></div></div>
+          <div class="panel" id="p-cmp-test-2" role="tabpanel" aria-labelledby="t-cmp-test-2" hidden><div class="frame"><video data-src="static/videos/compare_test_bowl_006_cam7.mp4" data-poster="static/images/posters/compare_test_bowl_006_cam7.jpg" data-start="0.4" width="1920" height="604" muted loop playsinline preload="none" aria-label="Held-out view, example 2" aria-describedby="cols-cmp-test"></video></div></div>
+          <div class="panel" id="p-cmp-test-3" role="tabpanel" aria-labelledby="t-cmp-test-3" hidden><div class="frame"><video data-src="static/videos/compare_test_bowl_010_cam7.mp4" data-poster="static/images/posters/compare_test_bowl_010_cam7.jpg" data-start="0.4" width="1920" height="544" muted loop playsinline preload="none" aria-label="Held-out view, example 3" aria-describedby="cols-cmp-test"></video></div></div>
+        </div>
+        <div class="tabs thumbs" role="tablist" aria-label="Held-out examples" data-tabs>
+          <button class="tab thumb" role="tab" id="t-cmp-test-1" aria-controls="p-cmp-test-1" aria-selected="true" aria-label="Example 1"><img src="static/images/thumbs/compare_test_bowl_013_cam7.jpg" width="420" height="134" alt=""></button>
+          <button class="tab thumb" role="tab" id="t-cmp-test-2" aria-controls="p-cmp-test-2" aria-selected="false" tabindex="-1" aria-label="Example 2"><img src="static/images/thumbs/compare_test_bowl_006_cam7.jpg" width="420" height="132" alt=""></button>
+          <button class="tab thumb" role="tab" id="t-cmp-test-3" aria-controls="p-cmp-test-3" aria-selected="false" tabindex="-1" aria-label="Example 3"><img src="static/images/thumbs/compare_test_bowl_010_cam7.jpg" width="420" height="119" alt=""></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="cmp-train" role="tabpanel" aria-labelledby="tab-cmp-train" tabindex="0" hidden>
+      <div class="gallery" style="--n:5; --gap:0.5208%">
+        <div class="strip">
+          <div class="cols" id="cols-cmp-train"><span>Captured</span><span>Deformable-3DGS</span><span>SpacetimeGaussians</span><span>4D-Scaffold-GS</span><span class="ours">Ours</span></div>
+          <div class="panel" id="p-cmp-train-1" role="tabpanel" aria-labelledby="t-cmp-train-1"><div class="frame"><video data-src="static/videos/compare_train_bowl_005_cam5.mp4" data-poster="static/images/posters/compare_train_bowl_005_cam5.jpg" data-start="0.4" width="1920" height="624" muted loop playsinline preload="none" aria-label="Training view, example 1" aria-describedby="cols-cmp-train"></video></div></div>
+          <div class="panel" id="p-cmp-train-2" role="tabpanel" aria-labelledby="t-cmp-train-2" hidden><div class="frame"><video data-src="static/videos/compare_train_bowl_010_cam5.mp4" data-poster="static/images/posters/compare_train_bowl_010_cam5.jpg" data-start="0.4" width="1920" height="544" muted loop playsinline preload="none" aria-label="Training view, example 2" aria-describedby="cols-cmp-train"></video></div></div>
+          <div class="panel" id="p-cmp-train-3" role="tabpanel" aria-labelledby="t-cmp-train-3" hidden><div class="frame"><video data-src="static/videos/compare_train_bowl_003_cam2.mp4" data-poster="static/images/posters/compare_train_bowl_003_cam2.jpg" data-start="0.4" width="1920" height="584" muted loop playsinline preload="none" aria-label="Training view, example 3" aria-describedby="cols-cmp-train"></video></div></div>
+        </div>
+        <div class="tabs thumbs" role="tablist" aria-label="Training examples" data-tabs>
+          <button class="tab thumb" role="tab" id="t-cmp-train-1" aria-controls="p-cmp-train-1" aria-selected="true" aria-label="Example 1"><img src="static/images/thumbs/compare_train_bowl_005_cam5.jpg" width="420" height="136" alt="" loading="lazy"></button>
+          <button class="tab thumb" role="tab" id="t-cmp-train-2" aria-controls="p-cmp-train-2" aria-selected="false" tabindex="-1" aria-label="Example 2"><img src="static/images/thumbs/compare_train_bowl_010_cam5.jpg" width="420" height="119" alt="" loading="lazy"></button>
+          <button class="tab thumb" role="tab" id="t-cmp-train-3" aria-controls="p-cmp-train-3" aria-selected="false" tabindex="-1" aria-label="Example 3"><img src="static/images/thumbs/compare_train_bowl_003_cam2.jpg" width="420" height="128" alt="" loading="lazy"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================================================== -->
+<section id="interpolation">
+  <div class="wrap">
+    <h2>Temporal interpolation</h2>
+    <!-- Held-out clips (interp_bowl_006_test / _007_test) are not shown: their leftmost column is a
+         rendering, not the captured frames (see README.md, "Known gaps"). To add them, copy this
+         gallery under a second "Held-out views" tab like the Results section does. -->
+    <div class="gallery" style="--n:5; --gap:0.3118%">
+      <div class="strip">
+        <div class="cols" id="cols-interp"><span>Captured (10 fps)</span><span>Deformable-3DGS</span><span>SpacetimeGaussians</span><span>4D-Scaffold-GS</span><span class="ours">Ours</span></div>
+        <div class="panel" id="p-int-1" role="tabpanel" aria-labelledby="t-int-1"><div class="frame"><video data-src="static/videos/interp_bowl_006_train.mp4" poster="static/images/posters/interp_bowl_006_train.jpg" data-start="0.4" width="1920" height="412" muted loop playsinline preload="none" aria-label="Temporal interpolation, example 1" aria-describedby="cols-interp"></video></div></div>
+        <div class="panel" id="p-int-2" role="tabpanel" aria-labelledby="t-int-2" hidden><div class="frame"><video data-src="static/videos/interp_bowl_007_train.mp4" data-poster="static/images/posters/interp_bowl_007_train.jpg" data-start="0.4" width="1920" height="412" muted loop playsinline preload="none" aria-label="Temporal interpolation, example 2" aria-describedby="cols-interp"></video></div></div>
+        <div class="panel" id="p-int-3" role="tabpanel" aria-labelledby="t-int-3" hidden><div class="frame"><video data-src="static/videos/interp_bowl_001_train.mp4" data-poster="static/images/posters/interp_bowl_001_train.jpg" data-start="0.4" width="1920" height="412" muted loop playsinline preload="none" aria-label="Temporal interpolation, example 3" aria-describedby="cols-interp"></video></div></div>
+        <div class="panel" id="p-int-4" role="tabpanel" aria-labelledby="t-int-4" hidden><div class="frame"><video data-src="static/videos/interp_bowl_002_train.mp4" data-poster="static/images/posters/interp_bowl_002_train.jpg" data-start="0.4" width="1920" height="412" muted loop playsinline preload="none" aria-label="Temporal interpolation, example 4" aria-describedby="cols-interp"></video></div></div>
+      </div>
+      <div class="tabs thumbs" role="tablist" aria-label="Interpolation examples" data-tabs>
+        <button class="tab thumb" role="tab" id="t-int-1" aria-controls="p-int-1" aria-selected="true" aria-label="Example 1"><img src="static/images/thumbs/interp_bowl_006_train.jpg" width="420" height="90" alt="" loading="lazy"></button>
+        <button class="tab thumb" role="tab" id="t-int-2" aria-controls="p-int-2" aria-selected="false" tabindex="-1" aria-label="Example 2"><img src="static/images/thumbs/interp_bowl_007_train.jpg" width="420" height="90" alt="" loading="lazy"></button>
+        <button class="tab thumb" role="tab" id="t-int-3" aria-controls="p-int-3" aria-selected="false" tabindex="-1" aria-label="Example 3"><img src="static/images/thumbs/interp_bowl_001_train.jpg" width="420" height="90" alt="" loading="lazy"></button>
+        <button class="tab thumb" role="tab" id="t-int-4" aria-controls="p-int-4" aria-selected="false" tabindex="-1" aria-label="Example 4"><img src="static/images/thumbs/interp_bowl_002_train.jpg" width="420" height="90" alt="" loading="lazy"></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================================================== -->
+<section id="style">
+  <div class="wrap">
+    <h2>Style transfer</h2>
+    <div class="gallery" style="--n:4; --gap:0.3040%">
+      <div class="strip">
+        <div class="cols" id="cols-style"><span class="ours">Reconstruction</span><span>Amber dye</span><span>Brown dye</span><span>Green dye</span></div>
+        <div class="panel" id="p-sty-1" role="tabpanel" aria-labelledby="t-sty-1"><div class="frame"><video data-src="static/videos/style_bowl_006.mp4" poster="static/images/posters/style_bowl_006.jpg" data-start="0.4" width="1920" height="452" muted loop playsinline preload="none" aria-label="Style transfer, example 1" aria-describedby="cols-style"></video></div></div>
+        <div class="panel" id="p-sty-2" role="tabpanel" aria-labelledby="t-sty-2" hidden><div class="frame"><video data-src="static/videos/style_bowl_007.mp4" data-poster="static/images/posters/style_bowl_007.jpg" data-start="0.4" width="1920" height="452" muted loop playsinline preload="none" aria-label="Style transfer, example 2" aria-describedby="cols-style"></video></div></div>
+        <div class="panel" id="p-sty-3" role="tabpanel" aria-labelledby="t-sty-3" hidden><div class="frame"><video data-src="static/videos/style_bowl_002.mp4" data-poster="static/images/posters/style_bowl_002.jpg" data-start="0.4" width="1920" height="452" muted loop playsinline preload="none" aria-label="Style transfer, example 3" aria-describedby="cols-style"></video></div></div>
+        <div class="panel" id="p-sty-4" role="tabpanel" aria-labelledby="t-sty-4" hidden><div class="frame"><video data-src="static/videos/style_bowl_005.mp4" data-poster="static/images/posters/style_bowl_005.jpg" data-start="0.4" width="1920" height="452" muted loop playsinline preload="none" aria-label="Style transfer, example 4" aria-describedby="cols-style"></video></div></div>
+      </div>
+      <div class="tabs thumbs" role="tablist" aria-label="Style transfer examples" data-tabs>
+        <button class="tab thumb" role="tab" id="t-sty-1" aria-controls="p-sty-1" aria-selected="true" aria-label="Example 1"><img src="static/images/thumbs/style_bowl_006.jpg" width="420" height="99" alt="" loading="lazy"></button>
+        <button class="tab thumb" role="tab" id="t-sty-2" aria-controls="p-sty-2" aria-selected="false" tabindex="-1" aria-label="Example 2"><img src="static/images/thumbs/style_bowl_007.jpg" width="420" height="99" alt="" loading="lazy"></button>
+        <button class="tab thumb" role="tab" id="t-sty-3" aria-controls="p-sty-3" aria-selected="false" tabindex="-1" aria-label="Example 3"><img src="static/images/thumbs/style_bowl_002.jpg" width="420" height="99" alt="" loading="lazy"></button>
+        <button class="tab thumb" role="tab" id="t-sty-4" aria-controls="p-sty-4" aria-selected="false" tabindex="-1" aria-label="Example 4"><img src="static/images/thumbs/style_bowl_005.jpg" width="420" height="99" alt="" loading="lazy"></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================================================================== -->
+<section id="citation">
+  <div class="wrap wrap--narrow">
+    <h2>Citation</h2>
+    <div class="bibtex">
+      <button class="copy" id="copy-bib" type="button" aria-live="polite">Copy</button>
+<pre id="bibtex">@inproceedings{splashsplat,
+  title     = {SplashSplat: Reconstructing Splashing Liquids from Real-World Multi-View Videos},
+  author    = {TODO},
+  booktitle = {TODO},
+  year      = {TODO}
+}</pre>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap wrap--narrow">
+    <p>The dataset (frames, liquid masks, calibration and evaluation splits) is released under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; the code will be released under the <a href="https://opensource.org/license/mit" target="_blank" rel="noopener">MIT License</a> (see the <a href="https://github.com/Niko-creater/Splashsplat" target="_blank" rel="noopener">repository</a>). <!-- TODO(ack): acknowledgements / funding --></p>
+  </div>
+</footer>
+
+<button class="motion-toggle" id="motion-toggle" type="button" title="Pause or resume all looping videos">Pause videos</button>
+
+<script src="static/js/main.js"></script>
+</body>
+</html>
